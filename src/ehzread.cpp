@@ -1,30 +1,18 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
-#include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
 
 int main(int argc,char** argv) {
   struct termios tio;
- // struct termios stdio;
   int tty_fd;
   fd_set rdset;
 
-  unsigned char c='D';
+  unsigned char c='X';
 
   std::cout << "Please start with " << argv[0] << 
     " /dev/ttyS1 (for example)" << std::endl;
- // memset(&stdio,0,sizeof(stdio));
- // stdio.c_iflag=0;
- // stdio.c_oflag=0;
- // stdio.c_cflag=0;
- // stdio.c_lflag=0;
- // stdio.c_cc[VMIN]=1;
- // stdio.c_cc[VTIME]=0;
- // tcsetattr(STDOUT_FILENO,TCSANOW,&stdio);
- // tcsetattr(STDOUT_FILENO,TCSAFLUSH,&stdio);
-  fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);       // make the reads non-blocking
 
   memset(&tio,0,sizeof(tio));
   tio.c_iflag=0;
@@ -39,10 +27,10 @@ int main(int argc,char** argv) {
   cfsetispeed(&tio,B9600);            // 9600 baud
 
   tcsetattr(tty_fd,TCSANOW,&tio);
-  while (c!='q')
+  while (true)
   {
-    if (read(tty_fd,&c,1)>0)        write(STDOUT_FILENO,&c,1);              // if new data is available on the serial port, print it out
-    if (read(STDIN_FILENO,&c,1)>0)  write(tty_fd,&c,1);                     // if new data is available on the console, send it to the serial port
+    if (read(tty_fd,&c,1)>0) // if new data is available on the serial port, print it out
+      std::cout << &c;
   }
 
   close(tty_fd);
